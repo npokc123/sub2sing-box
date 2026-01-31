@@ -1,6 +1,8 @@
 services:
   sub2sing-box:
-    image: nite07/sub2sing-box:latest
+    build:
+      context: .
+      dockerfile: Containerfile
     container_name: sub2sing-box
     volumes:
       - ./templates:/app/templates

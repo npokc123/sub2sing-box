@@ -300,7 +300,7 @@ func MergeTemplate(outbounds []model.Outbound, template *model.Options, groupRul
 		}
 	}
 
-	data, err := json.Marshal(template)
+	data, err := J.MarshalContext(globalCtx, template)
 	if err != nil {
 		return "", err
 	}

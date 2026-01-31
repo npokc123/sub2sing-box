@@ -1,22 +1,22 @@
 # sub2sing-box
 
-将订阅/节点连接转换为 sing-box 配置的工具。
+Инструмент для конвертации подписок и прямых ссылок на прокси в конфигурацию sing-box.
 
-## 控制台命令
+## Команды
 
-使用 `sub2sing-box <command> -h` 查看各命令的帮助信息。
+Используйте `sub2sing-box <command> -h` для просмотра справки по каждой команде.
 
-## 配置
+## Конфигурация
 
-示例:
+Пример:
 
 ```json
 {
-  "subscriptions": ["订阅地址1", "订阅地址2"],
-  "proxies": ["代理1", "代理2"],
-  "template": "模板路径或网络地址",
-  "delete": "剩余流量",
-  "rename": { "原文本": "新文本" },
+  "subscriptions": ["адрес_подписки_1", "адрес_подписки_2"],
+  "proxies": ["прокси_1", "прокси_2"],
+  "template": "путь к шаблону или URL",
+  "delete": "оставшийся трафик",
+  "rename": { "исходный текст": "новый текст" },
   "group-type": "selector",
   "sort": "name",
   "sort-type": "asc",
@@ -24,31 +24,31 @@
 }
 ```
 
-将上述 JSON 内容保存为 `sub2sing-box.json`，执行:
+Сохраните JSON выше в файл `sub2sing-box.json` и выполните:
 
 ```
 sub2sing-box convert -c ./sub2sing-box.json
 ```
 
-即可生成 sing-box 配置，无需每次重复设置参数。
+Это сгенерирует конфигурацию sing-box без необходимости каждый раз указывать параметры вручную.
 
-## 模板
+## Шаблоны
 
-### 默认模板
+### Шаблоны по умолчанию
 
-默认模板位于 `templates` 目录，使用 `tun` 配置，该配置仅供参考，请根据实际情况修改。
+Шаблоны по умолчанию находятся в директории `templates` и используют конфигурацию `tun`. Они предоставлены в качестве примера — измените их под свои нужды.
 
-### 占位符
+### Плейсхолдеры
 
-模板中可使用以下占位符:
+В шаблонах можно использовать следующие плейсхолдеры:
 
-- `<all-proxy-tags>`: 插入所有节点标签
-- `<all-country-tags>`: 插入所有国家标签
-- `<国家(地区)二字码>`: 插入指定国家(地区)所有节点标签，如 `<tw>`
+- `<all-proxy-tags>` — вставляет теги всех прокси-нод
+- `<all-country-tags>` — вставляет теги всех групп по странам
+- `<двухбуквенный код страны>` — вставляет теги всех нод указанной страны, например `<tw>`
 
-#### 占位符使用示例:
+#### Примеры использования плейсхолдеров:
 
-假设有节点：
+Допустим, есть ноды:
 
 - US
 - SG
@@ -57,16 +57,16 @@ sub2sing-box convert -c ./sub2sing-box.json
 ```json
 {
   "type": "selector",
-  "tag": "节点选择",
+  "tag": "Выбор ноды",
   "outbounds": ["<all-proxy-tags>", "direct"],
   "interrupt_exist_connections": true
 }
 
-// 转换后
+// После конвертации
 
 {
   "type": "selector",
-  "tag": "节点选择",
+  "tag": "Выбор ноды",
   "outbounds": ["US", "SG", "TW", "direct"],
   "interrupt_exist_connections": true
 }
@@ -75,53 +75,53 @@ sub2sing-box convert -c ./sub2sing-box.json
 ```json
 {
   "type": "selector",
-  "tag": "节点选择",
+  "tag": "Выбор ноды",
   "outbounds": ["<all-country-tags>", "direct"],
   "interrupt_exist_connections": true
 }
 
-// 转换后
+// После конвертации
 
 {
   "type": "selector",
-  "tag": "节点选择",
+  "tag": "Выбор ноды",
   "outbounds": ["美国(US)", "新加坡(SG)", "台湾(TW)", "direct"],
   "interrupt_exist_connections": true
 }
 
-// 其中 "美国(US)", "新加坡(SG)", "台湾(TW)" 为策略组，分别包含 US, SG, TW 节点
+// Где "美国(US)", "新加坡(SG)", "台湾(TW)" — группы стратегий, содержащие ноды US, SG, TW соответственно
 ```
 
 ```json
 {
   "type": "selector",
-  "tag": "巴哈姆特",
+  "tag": "Bahamut",
   "outbounds": ["<tw>", "direct"],
   "interrupt_exist_connections": true
 }
 
-// 转换后
+// После конвертации
 
 {
   "type": "selector",
-  "tag": "巴哈姆特",
+  "tag": "Bahamut",
   "outbounds": ["台湾(TW)", "direct"],
   "interrupt_exist_connections": true
 }
 ```
 
-## Docker 使用
+## Использование Docker
 
 ```
 docker run -p 8080:8080 nite07/sub2sing-box:latest
 ```
 
-可以挂载目录添加自定义模板
+Можно смонтировать директорию для добавления пользовательских шаблонов.
 
-## Server 模式 API
+## API режима Server
 
 ### GET /convert
 
-| query | 描述                                                                                                                    |
-| ----- | ----------------------------------------------------------------------------------------------------------------------- |
-| data  | 同上方配置，但需要使用 [base64 URL safe 编码](<https://gchq.github.io/CyberChef/#recipe=To_Base64('A-Za-z0-9%2B/%3D')>) |
+| query | Описание                                                                                                                          |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------- |
+| data  | Аналогично конфигурации выше, но в кодировке [base64 URL safe](<https://gchq.github.io/CyberChef/#recipe=To_Base64('A-Za-z0-9%2B/%3D')>) |
